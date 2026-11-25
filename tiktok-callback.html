@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Signing in - F.W.D.</title>
+<style>
+  body{font:16px/1.6 system-ui,Segoe UI,Arial,sans-serif;max-width:640px;margin:3rem auto;padding:0 1rem;color:#1b1b1b}
+  code{display:block;word-break:break-all;background:#f2f2f2;padding:.6rem;border-radius:6px;font-size:.85rem}
+  button{font:inherit;padding:.4rem .9rem;margin-top:.6rem}
+</style>
+</head>
+<body>
+<h1>Signing in&hellip;</h1>
+<p id="msg">Handing the TikTok sign-in to Jarvis on this PC.</p>
+<div id="manual" hidden>
+  <p>If Jarvis's setup window is still waiting, copy this address, paste it into that window and press Enter:</p>
+  <code id="addr"></code>
+  <button type="button" id="copy">Copy</button>
+</div>
+<script>
+// TikTok sends the browser here with ?code=...&state=... after "Authorize". This page sends nothing anywhere else: it only
+// passes the same answer on to Jarvis's local setup page on this computer, and shows it for pasting if that isn't running.
+(function () {
+  var q = location.search;
+  var local = 'https://localhost:8792/tiktok/callback' + q;
+  var msg = document.getElementById('msg'), manual = document.getElementById('manual');
+  if (!/[?&](code|error)=/.test(q)) { msg.textContent = 'There is no sign-in answer here.'; return; }
+  document.getElementById('addr').textContent = local;
+  manual.hidden = false;
+  document.getElementById('copy').onclick = function () { navigator.clipboard && navigator.clipboard.writeText(local); };
+  history.replaceState(null, '', location.pathname);       // don't leave the answer in this page's address
+  location.replace(local);
+})();
+</script>
+</body>
+</html>
